@@ -35,7 +35,7 @@ ChartJS.register(
 ChartJS.defaults.color = '#b5b7b7'; // Default color for all labels
 
 const ChartContainer = styled.div`
-    background-color: #2c2c2c;
+    background-color: #232323;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
@@ -46,12 +46,6 @@ const PieChartContainer = styled.div`
     justify-content: center;
     height: 260px;
     margin: 0 auto;
-`;
-
-const ToggleContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
 `;
 
 const formatDate = (dateString) => {
@@ -167,6 +161,24 @@ const Charts = () => {
     const totalArrivals = arrivals.reduce((sum, arr) => sum + arr, 0);
     const averageDepartures = departures.length ? totalDepartures / departures.length : 0;
     const averageArrivals = arrivals.length ? totalArrivals / arrivals.length : 0;
+
+    // Find the highest peak for departures
+    const maxDepartures = Math.max(...departures);
+    const maxDeparturesIndex = departures.indexOf(maxDepartures);
+    const maxDeparturesDate = new Date(dates[maxDeparturesIndex]).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    });
+
+    // Find the highest peak for arrivals
+    const maxArrivals = Math.max(...arrivals);
+    const maxArrivalsIndex = arrivals.indexOf(maxArrivals);
+    const maxArrivalsDate = new Date(dates[maxArrivalsIndex]).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    });
 
     const configCounts = Object.keys(configNames)
     .filter(id => configNames[id] !== 'NIL') // Exclude 'NIL'
@@ -411,7 +423,11 @@ const Charts = () => {
       averageGrowth,
       parallelApproachCount,
       averageDepartures,
-      averageArrivals
+      averageArrivals,
+      maxDepartures,
+      maxDeparturesDate,
+      maxArrivals,
+      maxArrivalsDate
     };
   }, [eventData, timePeriod]);
 
@@ -538,6 +554,19 @@ const Charts = () => {
         <Line data={processedData.depAndArrData} />
         <p>Average <b>{processedData.averageDepartures.toFixed(0)}</b> Departures and <b>{processedData.averageArrivals.toFixed(0)}</b> Arrivals</p>
       </ChartContainer>
+      
+      <ChartContainer>
+        <h3>{timePeriod === 'rolling-year' ? 'Departure and Arrival Peaks in the Last 12 Months' : 'Departure and Arrival Peaks'}</h3>
+        <p>
+            <img src="/departure.png" alt="Departure Icon" style={{ width: '20px', marginRight: '8px', verticalAlign: 'middle' }} />
+            <b>{processedData.maxDepartures}</b> departures reached {processedData.maxDeparturesDate}
+        </p>
+        <p>
+            <img src="/arrival.png" alt="Arrival Icon" style={{ width: '20px', marginRight: '8px', verticalAlign: 'middle' }} />
+            <b>{processedData.maxArrivals}</b> arrivals reached {processedData.maxArrivalsDate}
+        </p>
+        
+      </ChartContainer>
 
       <ChartContainer>
         <h3>
@@ -547,11 +576,9 @@ const Charts = () => {
         </h3>
         <p>
             The average growth rate is{' '}
-            <b>
                 {timePeriod === 'rolling-year'
                 ? `${processedData.averageGrowth} ops/month`
                 : `${processedData.averageGrowth} ops/year`}
-            </b>.
         </p>
       </ChartContainer>
 
