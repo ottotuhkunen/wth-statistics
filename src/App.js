@@ -23,7 +23,7 @@ function App() {
     <>
       <GlobalStyle />
       <AppContainer>
-        <h2>Welcome to HEL Event Statistics</h2>
+        <h2>Welcome to HEL • Event Statistics</h2>
         <Charts />
       </AppContainer>
     </>

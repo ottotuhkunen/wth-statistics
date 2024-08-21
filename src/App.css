@@ -55,3 +55,7 @@ h2 {
   max-width: 1000px;
   margin: 0 auto;
 }
+
+.average-tfc-text {
+  text-align: left;
+}

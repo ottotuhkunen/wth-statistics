@@ -12,15 +12,14 @@ export const configNames = {
   export const atcoNames = {
     0: 'NIL',
     1: 'GND',
-    9: 'CLD',
     2: 'TWR E',
     3: 'RAD E',
     4: 'ARR E',
     5: 'TWR W',
     6: 'RAD W',
     7: 'ARR W',
-    8: 'ICE C',
-    9: 'ICE D',
+    8: 'DE-ICING',
+    9: 'CLD',
     10: 'EFIN',
     11: 'EFRO',
     12: 'EFTU',
@@ -35,5 +34,8 @@ export const configNames = {
     21: 'EFMI',
     22: 'EFMA',
     23: 'EFTP',
+    24: 'EFKS',
+    25: 'EFSI',
+    26: 'EFSA',
+    27: 'EFET'
   };
-  

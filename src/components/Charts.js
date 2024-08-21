@@ -32,6 +32,8 @@ ChartJS.register(
   BarController
 );
 
+ChartJS.defaults.color = '#b5b7b7'; // Default color for all labels
+
 const ChartContainer = styled.div`
     background-color: #2c2c2c;
     padding: 20px;
@@ -95,6 +97,48 @@ const Charts = () => {
     }
   };
 
+  const calculateAverageGrowth = (data, timePeriod) => {
+    if (data.length < 2) return 0; // Not enough data to calculate growth
+  
+    let growthRates = [];
+  
+    for (let i = 1; i < data.length; i++) {
+      const prevValue = data[i - 1];
+      const currValue = data[i];
+      const growthRate = currValue - prevValue; // Growth in operations
+      growthRates.push(growthRate);
+    }
+  
+    const totalGrowth = growthRates.reduce((acc, rate) => acc + rate, 0);
+    const periods = timePeriod === 'rolling-year' ? data.length - 1 : data.length - 1; // Number of periods in a year or months
+  
+    const averageGrowth = periods > 0 ? totalGrowth / periods : 0;
+  
+    // Determine the sign for the growth rate
+    const sign = averageGrowth > 0 ? '+' : (averageGrowth < 0 ? '-' : '');
+  
+    // Return the formatted average growth with the sign
+    return `${sign}${Math.abs(averageGrowth).toFixed(1)}`;
+  };  
+
+  const normalizeMonth = (month) => {
+    switch(month) {
+      case 'Sept':
+      case 'Sep':
+        return 'Sep';
+      default:
+        return month;
+    }
+  };
+  
+  const currentMonth = normalizeMonth(new Date().toLocaleString('default', { month: 'short' }));
+  
+  const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const sortedMonthOrder = [
+    ...monthOrder.slice(monthOrder.indexOf(currentMonth) + 1),
+    ...monthOrder.slice(0, monthOrder.indexOf(currentMonth) + 1)
+  ];
+  
   const processedData = useMemo(() => {
     
     let filteredEventData = [...eventData];
@@ -119,6 +163,11 @@ const Charts = () => {
 
     const latestDataDate = dates.length ? new Date(Math.max(...dates.map(date => new Date(date).getTime()))).toLocaleDateString() : 'No data available';
 
+    const totalDepartures = departures.reduce((sum, dep) => sum + dep, 0);
+    const totalArrivals = arrivals.reduce((sum, arr) => sum + arr, 0);
+    const averageDepartures = departures.length ? totalDepartures / departures.length : 0;
+    const averageArrivals = arrivals.length ? totalArrivals / arrivals.length : 0;
+
     const configCounts = Object.keys(configNames)
     .filter(id => configNames[id] !== 'NIL') // Exclude 'NIL'
     .reduce((acc, id) => {
@@ -140,17 +189,23 @@ const Charts = () => {
       return acc;
     }, {});
 
-    const totalOccurrences = Object.values(atcoCounts).reduce((sum, count) => sum + count, 0);
+    const atcoActivityCounts = sortedEventData.reduce((acc, event) => {
+        const uniqueAtcos = new Set(event.atco.map(atco => atcoNames[atco])); // Unique ATCO positions for each date
+        uniqueAtcos.forEach(atco => {
+          acc[atco] = (acc[atco] || 0) + 1;
+        });
+        return acc;
+    }, {});
 
     // Calculate EFHK ATCO counts as percentages
-    const efhkAtcoCounts = Object.keys(atcoCounts)
+    const efhkAtcoCounts = Object.keys(atcoActivityCounts)
     .filter((name) => {
       const atcoId = Object.keys(atcoNames).find(id => atcoNames[id] === name);
       return atcoId && parseInt(atcoId) >= 1 && parseInt(atcoId) <= 10; // EFHK
     })
-    .sort((a, b) => atcoCounts[b] - atcoCounts[a]) // Sort in descending order by value
+    .sort((a, b) => atcoActivityCounts[b] - atcoActivityCounts[a]) // Sort in descending order by count
     .reduce((acc, name) => {
-      const percentage = ((atcoCounts[name] / totalOccurrences) * 100).toFixed(1); // Round to 1 decimal place
+      const percentage = ((atcoActivityCounts[name] / dates.length) * 100).toFixed(1); // Calculate percentage based on unique dates
       acc[name] = parseFloat(percentage); // Convert to number for charting (no % sign here)
       return acc;
     }, {});
@@ -158,7 +213,7 @@ const Charts = () => {
   const regionalsAtcoCounts = Object.keys(atcoCounts)
     .filter((name) => {
       const atcoId = Object.keys(atcoNames).find(id => atcoNames[id] === name);
-      return atcoId && parseInt(atcoId) >= 11 && parseInt(atcoId) <= 23; // Regionals
+      return atcoId && parseInt(atcoId) >= 11 && parseInt(atcoId) <= 40; // Regionals
     })
     .sort((a, b) => atcoCounts[b] - atcoCounts[a]) // Sort in descending order by value
     .reduce((acc, name) => {
@@ -167,33 +222,29 @@ const Charts = () => {
     }, {});  
 
     const monthlyTraffic = sortedEventData.reduce((acc, event) => {
-      const month = new Date(event.date).toLocaleString('default', { month: 'short' });
-      if (!acc[month]) {
-        acc[month] = { departures: 0, arrivals: 0 };
-      }
-      acc[month].departures += event.departures;
-      acc[month].arrivals += event.arrivals;
-      return acc;
+        const month = normalizeMonth(new Date(event.date).toLocaleString('default', { month: 'short' }));
+        if (!acc[month]) {
+          acc[month] = { departures: 0, arrivals: 0 };
+        }
+        acc[month].departures += event.departures;
+        acc[month].arrivals += event.arrivals;
+        return acc;
     }, {});
-
+    
     const monthlyAtcoActivity = sortedEventData.reduce((acc, event) => {
-      const month = new Date(event.date).toLocaleString('default', { month: 'short' });
-      acc[month] = (acc[month] || 0) + event.atco.length;
-      return acc;
+        const month = normalizeMonth(new Date(event.date).toLocaleString('default', { month: 'short' }));
+        acc[month] = (acc[month] || 0) + event.atco.length;
+        return acc;
     }, {});
-
-    const currentMonth = new Date().toLocaleString('default', { month: 'short' });
-    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
-    const sortedMonthOrder = [...monthOrder.slice(monthOrder.indexOf(currentMonth) + 1), ...monthOrder.slice(0, monthOrder.indexOf(currentMonth) + 1)];
-
+    
     const sortedMonthlyTraffic = sortedMonthOrder.reduce((acc, month) => {
-      acc[month] = monthlyTraffic[month] || { departures: 0, arrivals: 0 };
-      return acc;
+        acc[month] = monthlyTraffic[month] || { departures: 0, arrivals: 0 };
+        return acc;
     }, {});
-
+    
     const sortedMonthlyAtcoActivity = sortedMonthOrder.reduce((acc, month) => {
-      acc[month] = monthlyAtcoActivity[month] || 0;
-      return acc;
+        acc[month] = monthlyAtcoActivity[month] || 0;
+        return acc;
     }, {});
 
     const trendline = departures.map((_, i) => {
@@ -235,6 +286,8 @@ const Charts = () => {
         return allRequiredATCOsPresent ? count + 1 : count;
     }, 0);
 
+    const averageGrowth = calculateAverageGrowth(totalMovements, timePeriod);
+      
     return {
       globalData: {
         labels: dates,
@@ -355,7 +408,10 @@ const Charts = () => {
       monthWithMostTraffic,
       monthWithMostAtcoActivity,
       averageGlobalMovements,
-      parallelApproachCount
+      averageGrowth,
+      parallelApproachCount,
+      averageDepartures,
+      averageArrivals
     };
   }, [eventData, timePeriod]);
 
@@ -374,8 +430,7 @@ const Charts = () => {
       },
       legend: {
         labels: {
-          boxWidth: 20,
-          color: '#b5b7b7'
+          boxWidth: 20
         },
       },
     },
@@ -408,13 +463,13 @@ const Charts = () => {
       x: {
         title: {
           display: true,
-          text: 'Date'
+          text: ''
         }
       },
       y: {
         title: {
           display: true,
-          text: 'Global Movements'
+          text: 'Global Movements (n)'
         },
         position: 'left',
         min: 0
@@ -422,7 +477,7 @@ const Charts = () => {
       y1: {
         title: {
           display: true,
-          text: 'ATCO Activity'
+          text: 'ATCO Activity (n)'
         },
         position: 'right',
         grid: {
@@ -449,10 +504,10 @@ const Charts = () => {
         yAxisID: 'y'
       },
       {
-        label: 'ATCO Activity',
+        label: 'ATCO Activity (EFHK + Regionals)',
         data: processedData.atcoActivityData.datasets[0].data,
-        backgroundColor: '#4caf50',
-        borderColor: '#4caf50',
+        backgroundColor: '#265728',
+        borderColor: '#265728',
         borderWidth: 1,
         type: 'bar',
         yAxisID: 'y1'
@@ -467,9 +522,9 @@ const Charts = () => {
       <ModernToggle timePeriod={timePeriod} setTimePeriod={setTimePeriod} />
 
       <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Global Movements in the Last 12 Months' : 'Global Movements Over Time'}</h3>
+      <h3>{timePeriod === 'rolling-year' ? 'Activity in the Last 12 Months' : 'Activity'}</h3>
       <Line data={combinedData} options={chartOptions} />
-      <p>The average number of operations during the event is <b>{processedData.averageGlobalMovements}</b>.</p>
+      <p>Average <b>{processedData.averageGlobalMovements}</b> Movements</p>
       </ChartContainer>
 
       <ChartContainer>
@@ -479,8 +534,25 @@ const Charts = () => {
       </ChartContainer>
 
       <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Traffic Movements in the Last 12 Months' : 'Traffic Movements Over Time'}</h3>
+      <h3>{timePeriod === 'rolling-year' ? 'Departures and Arrivals in the Last 12 Months' : 'Departures and Arrivals'}</h3>
         <Line data={processedData.depAndArrData} />
+        <p>Average <b>{processedData.averageDepartures.toFixed(0)}</b> Departures and <b>{processedData.averageArrivals.toFixed(0)}</b> Arrivals</p>
+      </ChartContainer>
+
+      <ChartContainer>
+        <h3>
+            {timePeriod === 'rolling-year'
+                ? 'Average Operations Trend in the Last 12 Months'
+                : 'Average Operations Trend'}
+        </h3>
+        <p>
+            The average growth rate is{' '}
+            <b>
+                {timePeriod === 'rolling-year'
+                ? `${processedData.averageGrowth} ops/month`
+                : `${processedData.averageGrowth} ops/year`}
+            </b>.
+        </p>
       </ChartContainer>
 
       <ChartContainer>
@@ -492,12 +564,12 @@ const Charts = () => {
       </ChartContainer>
 
       <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Helsinki ATCO Activity in the Last 12 Months %' : 'Helsinki ATCO Activity %'}</h3>
+      <h3>{timePeriod === 'rolling-year' ? 'Helsinki ATCO Activity in the Last 12 Months (%)' : 'Helsinki ATCO Activity (%)'}</h3>
         <Bar data={processedData.efhkAtcoData} options={atcoPercentageOptions} />
       </ChartContainer>
 
       <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Regionals ATCO Count in the Last 12 Months' : 'Regionals ATCO Count'}</h3>
+      <h3>{timePeriod === 'rolling-year' ? 'Regionals ATCO Activity in the Last 12 Months (n)' : 'Regionals ATCO Activity (n)'}</h3>
         <Bar data={processedData.regionalsAtcoData} />
       </ChartContainer>
 
