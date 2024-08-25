@@ -18,6 +18,7 @@ import styled from 'styled-components';
 import { configNames, atcoNames } from '../utils/constants';
 import '../App.css';
 import ModernToggle from './ModernToggle'; 
+import { atcoPercentageOptions, chartOptions, pieOptions, getChartOptions } from './Options';
 
 ChartJS.register(
   CategoryScale,
@@ -70,26 +71,6 @@ const Charts = () => {
     };
     getEventData();
   }, []);
-
-  const atcoPercentageOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-        min: 0,
-        max: 100
-      }
-    },
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            let value = context.raw;
-            return `${value.toFixed(1)}%`; // Show percentage with 1 decimal place in tooltip
-          }
-        }
-      }
-    }
-  };
 
   const calculateAverageGrowth = (data, timePeriod) => {
     if (data.length < 2) return 0; // Not enough data to calculate growth
@@ -429,81 +410,7 @@ const Charts = () => {
       maxArrivals,
       maxArrivalsDate
     };
-  }, [eventData, timePeriod]);
-
-  const pieOptions = {
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            let label = context.label || '';
-            if (context.parsed) {
-              label += `: ${context.parsed.toFixed(0)}`;
-            }
-            return label;
-          }
-        }
-      },
-      legend: {
-        labels: {
-          boxWidth: 20
-        },
-      },
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-  };
-
-  const chartOptions = {
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
-            if (context.parsed.y !== null) {
-              label += `: ${context.parsed.y.toFixed(0)}`;
-            }
-            return label;
-          }
-        }
-      },
-      legend: {
-        labels: {
-          boxWidth: 20,
-        },
-      },
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: ''
-        }
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Global Movements (n)'
-        },
-        position: 'left',
-        min: 0
-      },
-      y1: {
-        title: {
-          display: true,
-          text: 'ATCO Activity (n)'
-        },
-        position: 'right',
-        grid: {
-          drawOnChartArea: false
-        },
-        min: 0,
-        max: 20
-      }
-    }
-  };  
+  }, [eventData, timePeriod]); 
   
   const combinedData = {
     labels: processedData.globalData.labels,
@@ -551,7 +458,7 @@ const Charts = () => {
 
       <ChartContainer>
       <h3>{timePeriod === 'rolling-year' ? 'Departures and Arrivals in the Last 12 Months' : 'Departures and Arrivals'}</h3>
-        <Line data={processedData.depAndArrData} />
+        <Line data={processedData.depAndArrData} options={getChartOptions('Movements (n)')} />
         <p>Average <b>{processedData.averageDepartures.toFixed(0)}</b> Departures and <b>{processedData.averageArrivals.toFixed(0)}</b> Arrivals</p>
       </ChartContainer>
       
@@ -565,7 +472,6 @@ const Charts = () => {
             <img src="/arrival.png" alt="Arrival Icon" style={{ width: '20px', marginRight: '8px', verticalAlign: 'middle' }} />
             <b>{processedData.maxArrivals}</b> arrivals reached {processedData.maxArrivalsDate}
         </p>
-        
       </ChartContainer>
 
       <ChartContainer>
@@ -592,23 +498,23 @@ const Charts = () => {
 
       <ChartContainer>
       <h3>{timePeriod === 'rolling-year' ? 'Helsinki ATCO Activity in the Last 12 Months (%)' : 'Helsinki ATCO Activity (%)'}</h3>
-        <Bar data={processedData.efhkAtcoData} options={atcoPercentageOptions} />
+        <Bar data={processedData.efhkAtcoData} options={getChartOptions('Uptime (%)')} />
       </ChartContainer>
 
       <ChartContainer>
       <h3>{timePeriod === 'rolling-year' ? 'Regionals ATCO Activity in the Last 12 Months (n)' : 'Regionals ATCO Activity (n)'}</h3>
-        <Bar data={processedData.regionalsAtcoData} />
+        <Bar data={processedData.regionalsAtcoData} options={getChartOptions('Activity (n)')} />
       </ChartContainer>
 
       <ChartContainer>
         <h3>Average Traffic Count per Month</h3>
-        <Bar data={processedData.barChartData} />
+        <Bar data={processedData.barChartData} options={getChartOptions('Movements (n)')} />
         <p>The month with the highest average traffic is <b>{processedData.monthWithMostTraffic}</b>.</p>
       </ChartContainer>
 
       <ChartContainer>
         <h3>Average ATCO Activity per Month</h3>
-        <Bar data={processedData.monthlyAtcoActivityData} />
+        <Bar data={processedData.monthlyAtcoActivityData} options={getChartOptions('ATCO Activity (n)')}  />
         <p>The month with the highest average ATCO activity is <b>{processedData.monthWithMostAtcoActivity}</b>.</p>
       </ChartContainer>
 
