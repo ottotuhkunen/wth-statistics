@@ -69,7 +69,9 @@ export const chartOptions = {
           text: 'Global Movements (n)'
         },
         position: 'left',
-        min: 0
+        min: 0,
+        max: 140,
+        
       },
       y1: {
         title: {
@@ -81,7 +83,7 @@ export const chartOptions = {
           drawOnChartArea: false
         },
         min: 0,
-        max: 20
+        max: 30
       }
     }
 }; 

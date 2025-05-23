@@ -59,3 +59,9 @@ h2 {
 .average-tfc-text {
   text-align: left;
 }
+
+.banner-image {
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 8px;
+}

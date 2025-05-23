@@ -13,512 +13,632 @@ import {
   BarController,
 } from 'chart.js';
 import { Line, Bar, Pie } from 'react-chartjs-2';
-import { fetchEventData } from '../services/airtable';
+import { fetchEventData } from '../services/fetchData';
 import styled from 'styled-components';
 import { configNames, atcoNames } from '../utils/constants';
-import '../App.css';
-import ModernToggle from './ModernToggle'; 
-import { atcoPercentageOptions, chartOptions, pieOptions, getChartOptions } from './Options';
+import ModernToggle from './ModernToggle';
+import { chartOptions, pieOptions, getChartOptions } from './Options';
 
+// Register ChartJS components
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  BarController
+  CategoryScale, LinearScale, PointElement, LineElement,
+  BarElement, ArcElement, Title, Tooltip, Legend, BarController
 );
 
-ChartJS.defaults.color = '#b5b7b7'; // Default color for all labels
+ChartJS.defaults.color = '#b5b7b7';
 
-const ChartContainer = styled.div`
-    background-color: #232323;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+// Styled components
+const DashboardContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 14px;
+  max-width: 1800px;
+  margin: 0 auto;
+  margin-top: 50px;
 `;
 
-const PieChartContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    height: 260px;
-    margin: 0 auto;
+const FullWidthChart = styled.div`
+  padding-bottom: 20px;
+  padding-top: 20px;
 `;
 
-const formatDate = (dateString) => {
-  if (!dateString) return '';
+const ChartGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 16px;
 
-  const options = { day: '2-digit', month: 'short', year: 'numeric' };
-  return new Intl.DateTimeFormat('en-GB', options).format(new Date(dateString));
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ChartCard = styled.div`
+  background: #191a1c;
+  padding: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const PieContainer = styled.div`
+  height: 300px;
+  margin: 0 auto;
+`;
+
+const StatCard = styled(ChartCard)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const StatRow = styled.div`
+  display: flex;
+  align-items: center;
+  align-self: center;
+  margin: 8px 0;
+`;
+
+const Icon = styled.img`
+  width: 20px;
+  margin-right: 8px;
+`;
+
+const ChartTitle = styled.h3`
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const formatDate = (dateInput) => {
+  if (!dateInput) return '';
+  
+  const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+  if (isNaN(date.getTime())) return 'Invalid date';
+  
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+  const year = date.getFullYear();
+  
+  return `${day}.${month}.${year}`;
+};
+
+const parseDate = (dateStr) => {
+  const [day, month, year] = dateStr.split('.');
+  return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
 };
 
 const Charts = () => {
   const [eventData, setEventData] = useState([]);
-  const [timePeriod, setTimePeriod] = useState('all-time'); // 'all-time' or 'rolling-year'
+  const [timePeriod, setTimePeriod] = useState('all-time');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const getEventData = async () => {
+    const loadData = async () => {
       try {
         const data = await fetchEventData();
         setEventData(data);
       } catch (error) {
-        console.error('Error fetching data from Airtable', error);
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    getEventData();
+    loadData();
   }, []);
 
-  const calculateAverageGrowth = (data, timePeriod) => {
-    if (data.length < 2) return 0; // Not enough data to calculate growth
-  
-    let growthRates = [];
-  
-    for (let i = 1; i < data.length; i++) {
-      const prevValue = data[i - 1];
-      const currValue = data[i];
-      const growthRate = currValue - prevValue; // Growth in operations
-      growthRates.push(growthRate);
-    }
-  
-    const totalGrowth = growthRates.reduce((acc, rate) => acc + rate, 0);
-    const periods = timePeriod === 'rolling-year' ? data.length - 1 : data.length - 1; // Number of periods in a year or months
-  
-    const averageGrowth = periods > 0 ? totalGrowth / periods : 0;
-  
-    // Determine the sign for the growth rate
-    const sign = averageGrowth > 0 ? '+' : (averageGrowth < 0 ? '-' : '');
-  
-    // Return the formatted average growth with the sign
-    return `${sign}${Math.abs(averageGrowth).toFixed(1)}`;
-  };  
-
-  const normalizeMonth = (month) => {
-    switch(month) {
-      case 'Sept':
-      case 'Sep':
-        return 'Sep';
-      default:
-        return month;
-    }
-  };
-  
-  const currentMonth = normalizeMonth(new Date().toLocaleString('default', { month: 'short' }));
-  
-  const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const sortedMonthOrder = [
-    ...monthOrder.slice(monthOrder.indexOf(currentMonth) + 1),
-    ...monthOrder.slice(0, monthOrder.indexOf(currentMonth) + 1)
-  ];
-  
   const processedData = useMemo(() => {
+    if (!eventData.length) return {};
     
-    let filteredEventData = [...eventData];
+    // Filter data based on time period
+    const filteredData = timePeriod === 'rolling-year'
+    ? eventData.filter(event => {
+        const now = new Date();
+        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        return parseDate(event.date) >= oneYearAgo;
+      })
+    : [...eventData];
 
-    if (timePeriod === 'rolling-year') {
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-      filteredEventData = filteredEventData.filter(event => new Date(event.date) >= oneYearAgo);
-    }
+    // Sort data by date
+    const sortedData = [...filteredData].sort((a, b) => parseDate(a.date) - parseDate(b.date));
 
-    const sortedEventData = filteredEventData.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Basic calculations
 
-    const dates = sortedEventData.map(event => event.date);
-    const departures = sortedEventData.map(event => event.departures);
-    const arrivals = sortedEventData.map(event => event.arrivals);
-    const totalMovements = departures.map((dep, index) => dep + arrivals[index]);
+    const dates = sortedData.map(event => parseDate(event.date));
 
-    const totalGlobalMovements = totalMovements.reduce((sum, movement) => sum + movement, 0);
+
+    const latestDate = dates.length > 0 ? new Date(Math.max(...dates.map(d => d.getTime()))) : null;
+
+    const departures = sortedData.map(event => event.departures);
+    const arrivals = sortedData.map(event => event.arrivals);
+    const totalMovements = departures.map((d, i) => d + arrivals[i]);
+    const atcoActivity = sortedData.map(event => event.atco.length);
+
+    // Totals and averages
+    const totalGlobalMovements = totalMovements.reduce((sum, m) => sum + m, 0);
     const averageGlobalMovements = Math.round(totalGlobalMovements / totalMovements.length);
+    const totalDepartures = departures.reduce((sum, d) => sum + d, 0);
+    const totalArrivals = arrivals.reduce((sum, a) => sum + a, 0);
 
-    const atcoActivity = sortedEventData.map(event => event.atco.length); // Number of ATCOs online
-
-    const latestDataDate = dates.length ? new Date(Math.max(...dates.map(date => new Date(date).getTime()))).toLocaleDateString() : 'No data available';
-
-    const totalDepartures = departures.reduce((sum, dep) => sum + dep, 0);
-    const totalArrivals = arrivals.reduce((sum, arr) => sum + arr, 0);
-    const averageDepartures = departures.length ? totalDepartures / departures.length : 0;
-    const averageArrivals = arrivals.length ? totalArrivals / arrivals.length : 0;
-
-    // Find the highest peak for departures
+    // Peaks
     const maxDepartures = Math.max(...departures);
-    const maxDeparturesIndex = departures.indexOf(maxDepartures);
-    const maxDeparturesDate = new Date(dates[maxDeparturesIndex]).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-
-    // Find the highest peak for arrivals
     const maxArrivals = Math.max(...arrivals);
-    const maxArrivalsIndex = arrivals.indexOf(maxArrivals);
-    const maxArrivalsDate = new Date(dates[maxArrivalsIndex]).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
+    const maxTraffic = Math.max(...totalMovements);
+    const maxTrafficDate = dates[totalMovements.indexOf(maxTraffic)];
 
-    const configCounts = Object.keys(configNames)
-    .filter(id => configNames[id] !== 'NIL') // Exclude 'NIL'
-    .reduce((acc, id) => {
-      const name = configNames[id];
-      const count = sortedEventData.reduce((total, event) => {
-        const configName = configNames[event.config];
-        return configName === name ? total + 1 : total;
-      }, 0);
-      acc[name] = count;
-      return acc;
-    }, {});
+    // Config counts
+    const configCounts = Object.entries(configNames)
+      .filter(([_, name]) => name !== 'NIL')
+      .reduce((acc, [id, name]) => {
+        acc[name] = sortedData.filter(event => configNames[event.config] === name).length;
+        return acc;
+      }, {});
 
-    const atcoCounts = sortedEventData.reduce((acc, event) => {
-      event.atco.forEach(atco => {
-        if (atcoNames[atco] !== 'NIL') {
-          acc[atcoNames[atco]] = (acc[atcoNames[atco]] || 0) + 1;
-        }
+    // ATCO calculations
+    const atcoActivityCounts = sortedData.reduce((acc, event) => {
+      new Set(event.atco.map(atco => atcoNames[atco])).forEach(atco => {
+        acc[atco] = (acc[atco] || 0) + 1;
       });
       return acc;
     }, {});
 
-    const atcoActivityCounts = sortedEventData.reduce((acc, event) => {
-        const uniqueAtcos = new Set(event.atco.map(atco => atcoNames[atco])); // Unique ATCO positions for each date
-        uniqueAtcos.forEach(atco => {
-          acc[atco] = (acc[atco] || 0) + 1;
-        });
-        return acc;
-    }, {});
-
-    // Calculate EFHK ATCO counts as percentages
-    const efhkAtcoCounts = Object.keys(atcoActivityCounts)
-    .filter((name) => {
-      const atcoId = Object.keys(atcoNames).find(id => atcoNames[id] === name);
-      return atcoId && parseInt(atcoId) >= 1 && parseInt(atcoId) <= 10; // EFHK
-    })
-    .sort((a, b) => atcoActivityCounts[b] - atcoActivityCounts[a]) // Sort in descending order by count
-    .reduce((acc, name) => {
-      const percentage = ((atcoActivityCounts[name] / dates.length) * 100).toFixed(1); // Calculate percentage based on unique dates
-      acc[name] = parseFloat(percentage); // Convert to number for charting (no % sign here)
-      return acc;
-    }, {});
-  
-  const regionalsAtcoCounts = Object.keys(atcoCounts)
-    .filter((name) => {
-      const atcoId = Object.keys(atcoNames).find(id => atcoNames[id] === name);
-      return atcoId && parseInt(atcoId) >= 11 && parseInt(atcoId) <= 40; // Regionals
-    })
-    .sort((a, b) => atcoCounts[b] - atcoCounts[a]) // Sort in descending order by value
-    .reduce((acc, name) => {
-      acc[name] = atcoCounts[name];
-      return acc;
-    }, {});  
-
-    const monthlyTraffic = sortedEventData.reduce((acc, event) => {
-        const month = normalizeMonth(new Date(event.date).toLocaleString('default', { month: 'short' }));
-        if (!acc[month]) {
-          acc[month] = { departures: 0, arrivals: 0 };
-        }
-        acc[month].departures += event.departures;
-        acc[month].arrivals += event.arrivals;
-        return acc;
-    }, {});
-    
-    const monthlyAtcoActivity = sortedEventData.reduce((acc, event) => {
-        const month = normalizeMonth(new Date(event.date).toLocaleString('default', { month: 'short' }));
-        acc[month] = (acc[month] || 0) + event.atco.length;
-        return acc;
-    }, {});
-    
-    const sortedMonthlyTraffic = sortedMonthOrder.reduce((acc, month) => {
-        acc[month] = monthlyTraffic[month] || { departures: 0, arrivals: 0 };
-        return acc;
-    }, {});
-    
-    const sortedMonthlyAtcoActivity = sortedMonthOrder.reduce((acc, month) => {
-        acc[month] = monthlyAtcoActivity[month] || 0;
-        return acc;
-    }, {});
-
-    const trendline = departures.map((_, i) => {
-      const sumX = dates.length * (dates.length - 1) / 2;
-      const sumY = departures.reduce((acc, val) => acc + val, 0);
-      const sumXY = dates.reduce((acc, _, i) => acc + i * departures[i], 0);
-      const sumX2 = dates.reduce((acc, _, i) => acc + i * i, 0);
-
-      const m = (dates.length * sumXY - sumX * sumY) / (dates.length * sumX2 - sumX * sumX);
-      const b = (sumY - m * sumX) / dates.length;
-
-      return m * i + b;
-    });
-
-    const monthlyTrafficTotals = Object.keys(sortedMonthlyTraffic).reduce((acc, month) => {
-        const total = sortedMonthlyTraffic[month].departures + sortedMonthlyTraffic[month].arrivals;
-        acc[month] = total;
+    const efhkAtcoCounts = Object.entries(atcoActivityCounts)
+      .filter(([name]) => {
+        const atcoId = Object.keys(atcoNames).find(id => atcoNames[id] === name);
+        return atcoId && atcoId >= 1 && atcoId <= 10;
+      })
+      .sort((a, b) => b[1] - a[1])
+      .reduce((acc, [name, count]) => {
+        acc[name] = parseFloat(((count / dates.length) * 100).toFixed(1));
         return acc;
       }, {});
-    
-      const monthWithMostTraffic = Object.keys(monthlyTrafficTotals).reduce((maxMonth, month) => {
-        return monthlyTrafficTotals[month] > monthlyTrafficTotals[maxMonth] ? month : maxMonth;
-    }, Object.keys(monthlyTrafficTotals)[0]);
 
-    const monthWithMostAtcoActivity = Object.keys(sortedMonthlyAtcoActivity).reduce((maxMonth, month) => {
-        return sortedMonthlyAtcoActivity[month] > sortedMonthlyAtcoActivity[maxMonth] ? month : maxMonth;
-    }, Object.keys(sortedMonthlyAtcoActivity)[0]);
+    const regionalsAtcoCounts = Object.entries(atcoActivityCounts)
+    .filter(([name]) => {
+      const atcoId = Object.keys(atcoNames).find(id => atcoNames[id] === name);
+      return atcoId && atcoId >= 11 && atcoId <= 40;
+    })
+    .sort((a, b) => b[1] - a[1])
+    .reduce((acc, [name, count]) => {
+      acc[name] = count;
+      return acc;
+    }, {});
 
-    const totalCounts = departures.map((dep, index) => dep + arrivals[index]);
-    const maxTraffic = Math.max(...totalCounts);
-    const maxTrafficDate = dates[totalCounts.indexOf(maxTraffic)];
-
-    const parallelApproachATCOs = ['GND', 'TWR E', 'RAD E', 'ARR E', 'TWR W', 'RAD W', 'ARR W'];
-
-    const parallelApproachCount = sortedEventData.reduce((count, event) => {
-        const atcos = event.atco.map(atco => atcoNames[atco]);
-        // Check if all required ATCOs are present
-        const allRequiredATCOsPresent = parallelApproachATCOs.every(requiredATCO => atcos.includes(requiredATCO));
-        return allRequiredATCOsPresent ? count + 1 : count;
-    }, 0);
-
-    const averageGrowth = calculateAverageGrowth(totalMovements, timePeriod);
+    // Monthly calculations
+    const monthlyTraffic = sortedData.reduce((acc, event) => {
+      const month = event.date.split('.')[1];
+      const year = event.date.split('.')[2];
+      const key = `${year}-${month.padStart(2, '0')}`;
       
-    return {
-      globalData: {
-        labels: dates,
-        datasets: [
-            {
-            label: 'Global Movements',
-            data: totalMovements,
-            borderCapStyle: 'round',
-            pointStyle: 'rectRot',
-            fill: false,
-            tension: 0.3,
-            type: 'line'
-            }
-        ],
-        },
-        atcoActivityData: {
-        labels: dates,
-        datasets: [
-            {
-            label: 'ATCO Activity',
-            data: atcoActivity,
-            borderWidth: 1,
-            type: 'bar',
-            }
-        ],
-      },
-      depAndArrData: {
-        labels: dates,
-        datasets: [
-          {
-            label: 'Trendline',
-            data: trendline,
-            borderColor: '#f44336',
-            borderDash: [10, 5], // Dashed line for trendline
-            type: 'line', // Specify as a line chart
-            fill: false,
-            borderWidth: 1.5, // Thin line
-            pointRadius: 0, // Hide the circles on the line
-          },
-          {
-            label: 'Departures',
-            data: departures,
-            borderColor: '#2196f3',
-            backgroundColor: '#2196f3', // Color for bars
-            type: 'bar', // Specify as a bar chart
-            fill: false,
-            borderWidth: 0,
-          },
-          {
-            label: 'Arrivals',
-            data: arrivals,
-            borderColor: '#ff9800',
-            backgroundColor: '#ff9800', // Color for bars
-            type: 'bar', // Specify as a bar chart
-            fill: false,
-            borderWidth: 0,
-          },
-        ],
-      },      
-      configData: {
-        labels: Object.keys(configCounts),
-        datasets: [{
-          data: Object.values(configCounts),
-          backgroundColor: ['#4caf50', '#2196f3', '#ff9800', '#9c27b0', '#f44336'],
-          borderWidth: 1,
-        }],
-      },
-      efhkAtcoData: {
-        labels: Object.keys(efhkAtcoCounts),
-        datasets: [{
-          data: Object.values(efhkAtcoCounts),
-          backgroundColor: '#4caf50',
-          borderColor: '#4caf50',
-        }],
-      },
-      regionalsAtcoData: {
-        labels: Object.keys(regionalsAtcoCounts),
-        datasets: [{
-          data: Object.values(regionalsAtcoCounts),
-          backgroundColor: '#4caf50',
-          borderColor: '#4caf50',
-        }],
-      },
-      barChartData: {
-        labels: Object.keys(sortedMonthlyTraffic),
-        datasets: [
-          {
-            label: 'Departures',
-            data: Object.values(sortedMonthlyTraffic).map(month => month.departures),
-            backgroundColor: '#2196f3',
-            borderColor: '#2196f3',
-            borderWidth: 1,
-          },
-          {
-            label: 'Arrivals',
-            data: Object.values(sortedMonthlyTraffic).map(month => month.arrivals),
-            backgroundColor: '#ff9800',
-            borderColor: '#ff9800',
-            borderWidth: 1,
-          },
-        ],
-      },
-      monthlyAtcoActivityData: {
-        labels: Object.keys(sortedMonthlyAtcoActivity),
-        datasets: [
-          {
-            label: 'ATCO Activity',
-            data: Object.values(sortedMonthlyAtcoActivity),
-            backgroundColor: '#4caf50',
-            borderColor: '#4caf50',
-            borderWidth: 1,
-          },
-        ],
-      },
-      maxTrafficDate,
-      latestDataDate,
-      maxTraffic,
-      monthWithMostTraffic,
-      monthWithMostAtcoActivity,
-      averageGlobalMovements,
-      averageGrowth,
-      parallelApproachCount,
-      averageDepartures,
-      averageArrivals,
-      maxDepartures,
-      maxDeparturesDate,
-      maxArrivals,
-      maxArrivalsDate
-    };
-  }, [eventData, timePeriod]); 
-  
-  const combinedData = {
-    labels: processedData.globalData.labels,
-    datasets: [
-      {
-        label: 'Global Movements',
-        data: processedData.globalData.datasets[0].data,
-        borderColor: 'white',
-        borderCapStyle: 'round',
-        pointStyle: 'rectRot',
-        fill: false,
-        tension: 0.3,
-        borderWidth: 1.0,
-        yAxisID: 'y'
-      },
-      {
-        label: 'ATCO Activity (EFHK + Regionals)',
-        data: processedData.atcoActivityData.datasets[0].data,
-        backgroundColor: '#265728',
-        borderColor: '#265728',
-        borderWidth: 1,
-        type: 'bar',
-        yAxisID: 'y1'
+      if (!acc[key]) {
+        acc[key] = { departures: 0, arrivals: 0, count: 0 };
       }
-    ]
-  };
+      acc[key].departures += event.departures;
+      acc[key].arrivals += event.arrivals;
+      acc[key].count++;
+      return acc;
+    }, {});
+
+    const monthlyAtcoActivity = sortedData.reduce((acc, event) => {
+      const month = event.date.split('.')[1];
+      const year = event.date.split('.')[2];
+      const key = `${year}-${month.padStart(2, '0')}`;
+      
+      if (!acc[key]) {
+        acc[key] = { atcoCount: 0, eventCount: 0 };
+      }
+      acc[key].atcoCount += event.atco.length;
+      acc[key].eventCount++;
+      return acc;
+    }, {});
+
+    // Format monthly data for display
+    const monthlyTrafficData = Object.entries(monthlyTraffic).map(([key, value]) => {
+      const [year, month] = key.split('-');
+      const date = new Date(year, month - 1);
+      return {
+        month: date.toLocaleString('default', { month: 'short', year: 'numeric' }),
+        departures: value.departures,
+        arrivals: value.arrivals,
+        total: value.departures + value.arrivals,
+        avg: Math.round((value.departures + value.arrivals) / value.count)
+      };
+    }).sort((a, b) => new Date(a.month) - new Date(b.month));
+
+    const monthlyAtcoData = Object.entries(monthlyAtcoActivity).map(([key, value]) => {
+      const [year, month] = key.split('-');
+      const date = new Date(year, month - 1);
+      return {
+        month: date.toLocaleString('default', { month: 'short', year: 'numeric' }),
+        avgAtco: Math.round(value.atcoCount / value.eventCount)
+      };
+    }).sort((a, b) => new Date(a.month) - new Date(b.month));
+
+
+
+    // Parallel approaches
+    const parallelApproachATCOs = ['GND', 'TWR E', 'RAD E', 'ARR E', 'TWR W', 'RAD W', 'ARR W'];
+    const parallelApproachCount = sortedData.filter(event => 
+      parallelApproachATCOs.every(atco => 
+        event.atco.map(a => atcoNames[a]).includes(atco)
+      )
+    ).length;
+
+    return {
+      dates,
+      departures,
+      arrivals,
+      totalMovements,
+      atcoActivity,
+      configCounts,
+      efhkAtcoCounts,
+      regionalsAtcoCounts,
+      maxTraffic,
+      maxTrafficDate,
+      maxDepartures,
+      maxArrivals,
+      totalDepartures,
+      totalArrivals,
+      averageGlobalMovements,
+      parallelApproachCount,
+      latestDataDate: latestDate ? formatDate(latestDate) : 'No data available',
+      monthlyTrafficData,
+      monthlyAtcoData
+    };
+  }, [eventData, timePeriod]);
+
+  if (isLoading) {
+    return (
+      <DashboardContainer>
+        <p>Loading data...</p>
+      </DashboardContainer>
+    );
+  }
 
   return (
-    <div className='main-container'>
-    <p>Latest data from: {formatDate(processedData.maxTrafficDate)}</p>
-    
+    <DashboardContainer>
       <ModernToggle timePeriod={timePeriod} setTimePeriod={setTimePeriod} />
 
-      <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Activity in the Last 12 Months' : 'Activity'}</h3>
-      <Line data={combinedData} options={chartOptions} />
-      <p>Average <b>{processedData.averageGlobalMovements}</b> Movements</p>
-      </ChartContainer>
+      <FullWidthChart>
+        <ChartTitle>{timePeriod === 'rolling-year' ? 'Activity in the Last 12 Months' : 'Activity Since 2021'}</ChartTitle>
+        <Line 
+          data={{
+            labels: processedData.dates.map(date => formatDate(date)),
+            datasets: [
+              {
+                label: 'Global Movements',
+                data: processedData.totalMovements,
+                borderColor: 'gray',
+                tension: 0.2,
+                borderWidth: 1,
+                pointStyle: 'circle',
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                pointBackgroundColor: 'gray',
+                pointBorderColor: 'gray',
+                pointBorderWidth: 0
+              },
+              {
+                label: 'ATCO Activity',
+                data: processedData.atcoActivity,
+                backgroundColor: 'rgba(76, 175, 80, 0.4)',
+                type: 'bar',
+                borderWidth: 0,
+                yAxisID: 'y1'
+              }
+            ]
+          }} 
+          options={chartOptions} 
+        />
+        <p>Average <b>{processedData.averageGlobalMovements}</b> movements per event</p>
+      </FullWidthChart>
 
-      <ChartContainer>
-        <h3>{timePeriod === 'rolling-year' ? 'Busiest Day in the Last 12 Months' : 'Busiest Day of All Time'}</h3>
-        <p className='max-traffic-title'>The maximum traffic was recorded on {formatDate(processedData.maxTrafficDate)} with</p>
-        <p className='max-traffic-text'><b>{processedData.maxTraffic} movements</b></p>
-      </ChartContainer>
+      <StatCard>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '24px',
+          alignItems: 'flex-start'
+        }}>
+          {/* Left Column - Busiest Day */}
+          <div>
+          <ChartTitle style={{ marginBottom: '12px' }}>Busiest Day</ChartTitle>
+            <div style={{ lineHeight: '1.4' }}>
+              <p style={{ fontWeight: '500', marginBottom: '8px' }}>
+                {formatDate(processedData.maxTrafficDate)}
+              </p>
+              <p style={{ 
+                fontSize: '1.5rem', 
+                fontWeight: 'bold',
+                color: '#3a86ff',
+                margin: '8px 0 0 0'
+              }}>
+                {processedData.maxTraffic} movements
+              </p>
+            </div>
+          </div>
 
-      <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Departures and Arrivals in the Last 12 Months' : 'Departures and Arrivals'}</h3>
-        <Line data={processedData.depAndArrData} options={getChartOptions('Movements (n)')} />
-        <p>Average <b>{processedData.averageDepartures.toFixed(0)}</b> Departures and <b>{processedData.averageArrivals.toFixed(0)}</b> Arrivals</p>
-      </ChartContainer>
-      
-      <ChartContainer>
-        <h3>{timePeriod === 'rolling-year' ? 'Departure and Arrival Peaks in the Last 12 Months' : 'Departure and Arrival Peaks'}</h3>
-        <p>
-            <img src="/departure.png" alt="Departure Icon" style={{ width: '20px', marginRight: '8px', verticalAlign: 'middle' }} />
-            <b>{processedData.maxDepartures}</b> departures reached {processedData.maxDeparturesDate}
-        </p>
-        <p>
-            <img src="/arrival.png" alt="Arrival Icon" style={{ width: '20px', marginRight: '8px', verticalAlign: 'middle' }} />
-            <b>{processedData.maxArrivals}</b> arrivals reached {processedData.maxArrivalsDate}
-        </p>
-      </ChartContainer>
+          {/* Right Column - Totals */}
+          <div>
+            <ChartTitle style={{ marginBottom: '12px' }}>
+              {timePeriod === 'rolling-year' 
+                ? 'Total Movements' 
+                : 'Total Movements since 2021'}
+            </ChartTitle>
+            <p style={{ 
+              fontSize: '1.8rem', 
+              fontWeight: 'bold', 
+              color: '#3a86ff',
+              margin: '0 0 12px 0'
+            }}>
+              {(processedData.totalDepartures + processedData.totalArrivals).toLocaleString('fr-FR')}
+            </p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <StatRow>
+                <Icon src="/departure.png" alt="Departures" />
+                <span><b>{processedData.totalDepartures.toLocaleString('fr-FR')}</b></span>
+                <Icon src="/arrival.png" alt="Arrivals" style={{marginLeft: '20px'}}/>
+                <span><b>{processedData.totalArrivals.toLocaleString('fr-FR')}</b></span>
+              </StatRow>
+            </div>
+          </div>
+        </div>
+      </StatCard>
 
-      <ChartContainer>
-        <h3>
-            {timePeriod === 'rolling-year'
-                ? 'Average Operations Trend in the Last 12 Months'
-                : 'Average Operations Trend'}
-        </h3>
-        <p>
-            The average growth rate is{' '}
-                {timePeriod === 'rolling-year'
-                ? `${processedData.averageGrowth} ops/month`
-                : `${processedData.averageGrowth} ops/year`}
-        </p>
-      </ChartContainer>
+      <ChartGrid>
 
-      <ChartContainer>
-        <h3>Runway Configuration Usage</h3>
-        <PieChartContainer>
-          <Pie data={processedData.configData} options={pieOptions} />
-        </PieChartContainer>
-        <p>Simultaneous Parallel Approaches were established <b>{processedData.parallelApproachCount}</b> times.</p>
-      </ChartContainer>
 
-      <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Helsinki ATCO Activity in the Last 12 Months (%)' : 'Helsinki ATCO Activity (%)'}</h3>
-        <Bar data={processedData.efhkAtcoData} options={getChartOptions('Uptime (%)')} />
-      </ChartContainer>
+        <StatCard>
+          <ChartTitle>Runway Configurations</ChartTitle>
+          <PieContainer>
+            <Pie 
+              data={{
+                labels: Object.keys(processedData.configCounts),
+                datasets: [{
+                  data: Object.values(processedData.configCounts),
+                  backgroundColor: ['#4caf50', '#2196f3', '#ff9800', '#9c27b0', '#f44336'],
+                  borderWidth: 0
+                }]
+              }} 
+              options={pieOptions} 
+            />
+          </PieContainer>
+          <br />
+          <p>Simultaneous Parallel Approaches established <b>{processedData.parallelApproachCount}</b> times</p>
+        </StatCard>
+      </ChartGrid>
 
-      <ChartContainer>
-      <h3>{timePeriod === 'rolling-year' ? 'Regionals ATCO Activity in the Last 12 Months (n)' : 'Regionals ATCO Activity (n)'}</h3>
-        <Bar data={processedData.regionalsAtcoData} options={getChartOptions('Activity (n)')} />
-      </ChartContainer>
+      <FullWidthChart>
+        <ChartTitle>Departures and Arrivals</ChartTitle>
+        <Bar 
+          data={{
+            labels: processedData.dates.map(date => formatDate(date)),
+            datasets: [
+              {
+                label: 'Departures',
+                data: processedData.departures,
+                backgroundColor: 'rgba(10, 100, 255, 0.6)',
+              },
+              {
+                label: 'Arrivals',
+                data: processedData.arrivals,
+                backgroundColor: 'rgba(255, 140, 0, 0.6)',
+              }
+            ]
+          }}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+            },
+            scales: {
+              x: { stacked: false },
+              y: { beginAtZero: true }
+            }
+          }}
+        />
+        
+        <div style={{ 
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          marginTop: '16px',
+          fontSize: '14px'
+        }}>
+          <p style={{ textAlign: 'center' }}>
+            Average <b>{Math.round(processedData.totalDepartures / processedData.departures.length).toLocaleString()}</b> departures and{' '}
+            <b>{Math.round(processedData.totalArrivals / processedData.arrivals.length).toLocaleString()}</b> arrivals per event
+          </p>
+          
+          <div style={{ 
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '24px',
+            marginTop: '8px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Icon src="/departure.png" alt="Departures" style={{ width: '22px' }} />
+              <span style={{textAlign: "left", color: '#3a86ff', fontSize: '1.2rem'}}>
+                <b>{processedData.maxDepartures.toLocaleString()}</b> Departures reached {formatDate(processedData.dates[processedData.departures.indexOf(processedData.maxDepartures)])}
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Icon src="/arrival.png" alt="Arrivals" style={{ width: '22px' }} />
+              <span style={{textAlign: "left", color: '#3a86ff', fontSize: '1.2rem'}}>
+                <b>{processedData.maxArrivals.toLocaleString()}</b> Arrivals reached {formatDate(processedData.dates[processedData.arrivals.indexOf(processedData.maxArrivals)])}
+              </span>
+            </div>
+          </div>
+        </div>
+      </FullWidthChart>
 
-      <ChartContainer>
-        <h3>Average Traffic Count per Month</h3>
-        <Bar data={processedData.barChartData} options={getChartOptions('Movements (n)')} />
-        <p>The month with the highest average traffic is <b>{processedData.monthWithMostTraffic}</b>.</p>
-      </ChartContainer>
+      <ChartGrid>
 
-      <ChartContainer>
-        <h3>Average ATCO Activity per Month</h3>
-        <Bar data={processedData.monthlyAtcoActivityData} options={getChartOptions('ATCO Activity (n)')}  />
-        <p>The month with the highest average ATCO activity is <b>{processedData.monthWithMostAtcoActivity}</b>.</p>
-      </ChartContainer>
+        <ChartCard>
+          <ChartTitle>Helsinki ATCO Activity</ChartTitle>
+          <Bar 
+            data={{
+              labels: Object.keys(processedData.efhkAtcoCounts),
+              datasets: [{
+                data: Object.values(processedData.efhkAtcoCounts),
+                backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                label: 'ATCO Activity EFHK'
+              }]
+            }} 
+            options={{
+              ...getChartOptions('Uptime (%)'),
+              plugins: {
+                legend: { display: false },
+                title: { display: false, text: 'Monthly ATCO Activity' }
+              }
+            }}
+          />
+        </ChartCard>
 
-    </div>
+        <ChartCard>
+          <ChartTitle>Regional ATCO Activity</ChartTitle>
+          <Bar 
+            data={{
+              labels: Object.keys(processedData.regionalsAtcoCounts),
+              datasets: [{
+                data: Object.values(processedData.regionalsAtcoCounts),
+                backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                label: 'ATCO Activity Regionals'
+              }]
+            }} 
+            options={{
+              ...getChartOptions('Activity (n)'),
+              plugins: {
+                legend: { display: false },
+                title: { display: false, text: 'Monthly ATCO Activity' }
+              }
+            }}
+          />
+        </ChartCard>
+      </ChartGrid>
+
+      <ChartGrid>
+        <ChartCard>
+          <ChartTitle>Monthly Traffic</ChartTitle>
+          <Bar
+            data={{
+              labels: processedData.monthlyTrafficData.map(m => m.month),
+              datasets: [
+                {
+                  label: 'Departures',
+                  data: processedData.monthlyTrafficData.map(m => m.departures),
+                  backgroundColor: 'rgba(10, 100, 255, 0.6)',
+                },
+                {
+                  label: 'Arrivals',
+                  data: processedData.monthlyTrafficData.map(m => m.arrivals),
+                  backgroundColor: 'rgba(255, 140, 0, 0.6)',
+                }
+              ]
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: { display: false, text: 'Monthly Traffic' }
+              },
+              scales: {
+                x: {
+                  stacked: false,
+                },
+                y: {
+                  beginAtZero: true,
+                }
+              }
+            }}
+          />
+          {/* Note below the chart */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            marginTop: '16px',
+            fontSize: '14px',
+            color: '#6e6d6d'
+          }}>
+            <div style={{ textAlign: 'center', fontStyle: 'italic' }}>
+              {(() => {
+                const currentPeakDep = processedData.monthlyTrafficData.reduce((max, current) => 
+                current.departures > max.departures ? current : max
+                );
+                const currentPeakArr = processedData.monthlyTrafficData.reduce((max, current) => 
+                current.arrivals > max.arrivals ? current : max
+                );
+                return `Departures peak in ${currentPeakDep.month} (${currentPeakDep.departures.toLocaleString()}); Arrivals in ${currentPeakArr.month} (${currentPeakArr.arrivals.toLocaleString()})`;
+              })()}
+            </div>
+            <div style={{ 
+              textAlign: 'center',
+              fontWeight: 500,
+              color: '#333'
+            }}>
+            </div>
+          </div>
+
+        </ChartCard>
+
+        <ChartCard>
+          <ChartTitle>Monthly ATCO Activity</ChartTitle>
+          <Bar
+            data={{
+              labels: processedData.monthlyAtcoData.map(m => m.month),
+              datasets: [
+                {
+                  data: processedData.monthlyAtcoData.map(m => m.avgAtco),
+                  backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                }
+              ]
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                title: { display: false, text: 'Monthly ATCO Activity' }
+              },
+              scales: {
+                x: {
+                  stacked: false,
+                },
+                y: {
+                  beginAtZero: true,
+                }
+              }
+            }}
+          />
+          
+          {/* Note below the chart */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            marginTop: '16px',
+            fontSize: '14px',
+            color: '#6e6d6d'
+          }}>
+            <div style={{ textAlign: 'center', fontStyle: 'italic' }}>
+              {(() => {
+                const currentPeak = processedData.monthlyAtcoData.reduce((max, current) => 
+                  current.avgAtco > max.avgAtco ? current : max
+                );
+                return `Peak activity occurred in ${currentPeak.month} with an average of ${currentPeak.avgAtco.toLocaleString()} units online`;
+              })()}
+            </div>
+            <div style={{ 
+              textAlign: 'center',
+              fontWeight: 500,
+              color: '#333'
+            }}>
+            </div>
+          </div>
+        </ChartCard>
+      </ChartGrid>
+
+    </DashboardContainer>
   );
 };
 
