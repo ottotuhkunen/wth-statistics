@@ -246,4 +246,16 @@
   { "date": "4.12.2025", "departures": 83, "arrivals": 57, "config": 1, "atco": [10, 9, 1, 2, 3, 4] },
   { "date": "11.12.2025", "departures": 35, "arrivals": 64, "config": 3, "atco": [10, 11, 9, 1, 2, 3, 4, 6] },
   { "date": "18.12.2025", "departures": 49, "arrivals": 64, "config": 1, "atco": [10, 11, 15, 1, 2, 3, 4] }
+  { "date": "25.12.2025", "departures": 60, "arrivals": 86, "config": 3, "atco": [10, 9, 1, 15, 11, 2, 3, 4, 5, 6] }
+  { "date": "1.1.2026", "departures": 49, "arrivals": 46, "config": 3, "atco": [10, 9, 1, 2, 3, 8, 15, 4, 5, 15] }
+  { "date": "8.1.2026", "departures": 30, "arrivals": 58, "config": 3, "atco": [10, 11, 15, 1, 2, 3, 4] }
+  { "date": "22.1.2026", "departures": 34, "arrivals": 37, "config": 3, "atco": [10, 11, 9, 1, 2, 3, 4, 5] }
+  { "date": "29.1.2026", "departures": 46, "arrivals": 60, "config": 3, "atco": [10, 11, 9, 1, 2, 3, 4] }
+  { "date": "5.2.2026", "departures": 36, "arrivals": 58, "config": 3, "atco": [10, 9, 1, 2, 3, 4] }
+  { "date": "12.2.2026", "departures": 51, "arrivals": 55, "config": 3, "atco": [10, 9, 1, 2, 3, 4, 5, 6, 7, 8] }
+  { "date": "19.2.2026", "departures": 31, "arrivals": 62, "config": 3, "atco": [10, 9, 1, 2, 3, 4, 6] }
+  { "date": "26.2.2026", "departures": 30, "arrivals": 44, "config": 2, "atco": [10, 15, 9, 1, 2, 3, 4, 6] }
+  { "date": "5.3.2026", "departures": 33, "arrivals": 57, "config": 2, "atco": [10, 11, 9, 1, 2, 3, 4, 6] }
+  { "date": "12.3.2026", "departures": 41, "arrivals": 44, "config": 1, "atco": [10, 11, 9, 1, 2, 3, 4, 6] }
+  { "date": "19.3.2026", "departures": 48, "arrivals": 68, "config": 2, "atco": [10, 11, 23, 9, 1, 2, 3, 4, 5, 6, 7 ] }
 ]
