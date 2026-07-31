@@ -259,7 +259,7 @@
   { "date": "12.3.2026", "departures": 41, "arrivals": 44, "config": 1, "atco": [10, 11, 9, 1, 2, 3, 4, 6] },
   { "date": "19.3.2026", "departures": 48, "arrivals": 68, "config": 2, "atco": [10, 11, 23, 9, 1, 2, 3, 4, 5, 6, 7 ] },
   { "date": "26.3.2026", "departures": 32, "arrivals": 55, "config": 2, "atco": [10, 9, 1, 2, 3, 4, 11, 14 ] },
-  { "date": "2.4.2026", "departures": 36, "arrivals": 50, "config": 2, "atco": [10, 1, 2, 3, 4, 5, 6, 7, ] },
+  { "date": "2.4.2026", "departures": 36, "arrivals": 50, "config": 2, "atco": [10, 1, 2, 3, 4, 5, 6, 7 ] },
   { "date": "9.4.2026", "departures": 44, "arrivals": 60, "config": 1, "atco": [10, 9, 1, 2, 3, 4, 5, 6, 11, 23 ] },
   { "date": "16.4.2026", "departures": 30, "arrivals": 46, "config": 3, "atco": [10, 9, 1, 2, 3, 4, 6, 11, 14, 15 ] },
   { "date": "23.4.2026", "departures": 39, "arrivals": 42, "config": 3, "atco": [10, 9, 1, 2, 3, 4, 11, 15 ] },
