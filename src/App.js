@@ -1,80 +1,40 @@
-// src/App.js
-import React from 'react';
-import Charts from './components/Charts';
-import styled, { createGlobalStyle } from 'styled-components';
-import './App.css';
-
-const GlobalStyle = createGlobalStyle`
-  body {
-    background-color: #0d0d0d;
-    color: #d0d0d0;
-    font-family: Arial, Helvetica, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-`;
-
-const AppContainer = styled.div`
-  text-align: center;
-`;
+import React, { useState, useMemo } from 'react';
+import { rawEventData } from './data/eventData';
+import { filterDataByTimeframe, computeStats } from './utils/statsHelper';
+import arrivalsJson from './data/arrivals.json';
+import departuresJson from './data/departures.json';
 
 
-const TopMenu = styled.div`
-  padding: 8px;
-  text-align: left;
-  background-color: #102030;
-  margin: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 46px;
-  z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); 
-`;
+import Header from './components/Header';
+import KpiGrid from './components/KpiGrid';
+import ChartsSection from './components/ChartsSection';
+import AtcoBreakdown from './components/AtcoBreakdown';
+import TrafficInsightsSection from "./components/TrafficInsights";
+import MonthsSection from "./components/MonthsSection";
 
-function App() {
-  return (
-    <>
-      <GlobalStyle />
-      <AppContainer>
-        <TopMenu>
-          <h3 style={{margin: '3px'}}>Welcome to HEL</h3>
-          <p style={{margin: '3px', fontSize: '11pt'}}>Event Statistics</p>
-        </TopMenu>
+export default function App() {
+    const [timeframe, setTimeframe] = useState('all'); // 'all' or 'month'
 
-        <Charts />
-          <div style={{ 
-            display: 'flex', 
-            gap: '16px',
-            margin: '20px 0',
-            justifyContent: 'center'
+    // Filter and compute statistics dynamically based on toggle filter state
+    const filteredData = useMemo(() => {
+        return filterDataByTimeframe(rawEventData, timeframe);
+    }, [timeframe]);
 
-          }}>
-            <img 
-              src="/wth-banner.jpg" 
-              alt="Banner" 
-              style={{ 
-                width: '44%', 
-                maxWidth: '500px', 
-                height: 'auto',
-                borderRadius: '8px'
-              }} 
-            />
-            <img 
-              src="/wth-summer.jpg" 
-              alt="Summer Banner" 
-              style={{ 
-                width: '44%', 
-                maxWidth: '500px', 
-                height: 'auto',
-                borderRadius: '8px'
-              }} 
-            />
-          </div>
-          <br />   
-      </AppContainer>
-    </>
-  );
+    const stats = useMemo(() => {
+        return computeStats(filteredData);
+    }, [filteredData]);
+
+    return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500 selection:text-white pb-16">
+            <Header timeframe={timeframe} setTimeframe={setTimeframe} />
+
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <KpiGrid stats={stats} />
+                <ChartsSection data={filteredData} />
+                <AtcoBreakdown stats={stats} totalEvents={filteredData.length} />
+                <TrafficInsightsSection arrivalsData={arrivalsJson} departuresData={departuresJson} />
+                <MonthsSection data={filteredData} />
+            </main>
+        </div>
+    );
 }
-
-export default App;

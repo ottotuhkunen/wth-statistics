@@ -1,0 +1,1042 @@
+{
+  "totalEventsEvaluated": 277,
+  "totalDeparturesEvaluated": 9367,
+  "departurePoints": {
+    "TEVRU": {
+      "count": 1323,
+      "percentage": 14.12
+    },
+    "NEPEK": {
+      "count": 308,
+      "percentage": 3.29
+    },
+    "ADIVO": {
+      "count": 2295,
+      "percentage": 24.5
+    },
+    "KUVEM": {
+      "count": 105,
+      "percentage": 1.12
+    },
+    "NUNTO": {
+      "count": 2697,
+      "percentage": 28.79
+    },
+    "VALOX": {
+      "count": 1021,
+      "percentage": 10.9
+    },
+    "KOIVU": {
+      "count": 705,
+      "percentage": 7.53
+    },
+    "RENKU": {
+      "count": 187,
+      "percentage": 2
+    },
+    "IDEPI": {
+      "count": 166,
+      "percentage": 1.77
+    },
+    "ARVEP": {
+      "count": 461,
+      "percentage": 4.92
+    }
+  },
+  "topDestinations": [
+    {
+      "destination": "ESSA",
+      "count": 1437,
+      "percentage": 15.34
+    },
+    {
+      "destination": "EDDH",
+      "count": 1182,
+      "percentage": 12.62
+    },
+    {
+      "destination": "EFRO",
+      "count": 587,
+      "percentage": 6.27
+    },
+    {
+      "destination": "EKCH",
+      "count": 516,
+      "percentage": 5.51
+    },
+    {
+      "destination": "EFOU",
+      "count": 410,
+      "percentage": 4.38
+    },
+    {
+      "destination": "EDDB",
+      "count": 349,
+      "percentage": 3.73
+    },
+    {
+      "destination": "ENGM",
+      "count": 310,
+      "percentage": 3.31
+    },
+    {
+      "destination": "ULLI",
+      "count": 300,
+      "percentage": 3.2
+    },
+    {
+      "destination": "EHAM",
+      "count": 206,
+      "percentage": 2.2
+    },
+    {
+      "destination": "ESGG",
+      "count": 198,
+      "percentage": 2.11
+    }
+  ],
+  "aircraftTypes": [
+    {
+      "aircraft": "A320",
+      "count": 2308,
+      "percentage": 24.64
+    },
+    {
+      "aircraft": "B738",
+      "count": 1270,
+      "percentage": 13.56
+    },
+    {
+      "aircraft": "A20N",
+      "count": 1216,
+      "percentage": 12.98
+    },
+    {
+      "aircraft": "A321",
+      "count": 962,
+      "percentage": 10.27
+    },
+    {
+      "aircraft": "A359",
+      "count": 461,
+      "percentage": 4.92
+    },
+    {
+      "aircraft": "A319",
+      "count": 460,
+      "percentage": 4.91
+    },
+    {
+      "aircraft": "A21N",
+      "count": 167,
+      "percentage": 1.78
+    },
+    {
+      "aircraft": "B737",
+      "count": 160,
+      "percentage": 1.71
+    },
+    {
+      "aircraft": "AT75",
+      "count": 134,
+      "percentage": 1.43
+    },
+    {
+      "aircraft": "A339",
+      "count": 126,
+      "percentage": 1.35
+    },
+    {
+      "aircraft": "B38M",
+      "count": 102,
+      "percentage": 1.09
+    },
+    {
+      "aircraft": "B77W",
+      "count": 102,
+      "percentage": 1.09
+    },
+    {
+      "aircraft": "CL60",
+      "count": 99,
+      "percentage": 1.06
+    },
+    {
+      "aircraft": "B77L",
+      "count": 84,
+      "percentage": 0.9
+    },
+    {
+      "aircraft": "C25C",
+      "count": 81,
+      "percentage": 0.86
+    },
+    {
+      "aircraft": "MD82",
+      "count": 81,
+      "percentage": 0.86
+    },
+    {
+      "aircraft": "AT76",
+      "count": 81,
+      "percentage": 0.86
+    },
+    {
+      "aircraft": "A306",
+      "count": 76,
+      "percentage": 0.81
+    },
+    {
+      "aircraft": "A333",
+      "count": 74,
+      "percentage": 0.79
+    },
+    {
+      "aircraft": "MD11",
+      "count": 68,
+      "percentage": 0.73
+    },
+    {
+      "aircraft": "B789",
+      "count": 62,
+      "percentage": 0.66
+    },
+    {
+      "aircraft": "C700",
+      "count": 57,
+      "percentage": 0.61
+    },
+    {
+      "aircraft": "E190",
+      "count": 56,
+      "percentage": 0.6
+    },
+    {
+      "aircraft": "A346",
+      "count": 50,
+      "percentage": 0.53
+    },
+    {
+      "aircraft": "B739",
+      "count": 46,
+      "percentage": 0.49
+    },
+    {
+      "aircraft": "B748",
+      "count": 45,
+      "percentage": 0.48
+    },
+    {
+      "aircraft": "H",
+      "count": 44,
+      "percentage": 0.47
+    },
+    {
+      "aircraft": "A388",
+      "count": 44,
+      "percentage": 0.47
+    },
+    {
+      "aircraft": "B736",
+      "count": 40,
+      "percentage": 0.43
+    },
+    {
+      "aircraft": "A310",
+      "count": 40,
+      "percentage": 0.43
+    },
+    {
+      "aircraft": "B744",
+      "count": 38,
+      "percentage": 0.41
+    },
+    {
+      "aircraft": "CRJ7",
+      "count": 36,
+      "percentage": 0.38
+    },
+    {
+      "aircraft": "CRJ9",
+      "count": 34,
+      "percentage": 0.36
+    },
+    {
+      "aircraft": "MD83",
+      "count": 30,
+      "percentage": 0.32
+    },
+    {
+      "aircraft": "A343",
+      "count": 30,
+      "percentage": 0.32
+    },
+    {
+      "aircraft": "TBM9",
+      "count": 26,
+      "percentage": 0.28
+    },
+    {
+      "aircraft": "B772",
+      "count": 25,
+      "percentage": 0.27
+    },
+    {
+      "aircraft": "B752",
+      "count": 24,
+      "percentage": 0.26
+    },
+    {
+      "aircraft": "B78X",
+      "count": 24,
+      "percentage": 0.26
+    },
+    {
+      "aircraft": "DH8D",
+      "count": 20,
+      "percentage": 0.21
+    },
+    {
+      "aircraft": "B763",
+      "count": 20,
+      "percentage": 0.21
+    },
+    {
+      "aircraft": "E55P",
+      "count": 20,
+      "percentage": 0.21
+    },
+    {
+      "aircraft": "C750",
+      "count": 19,
+      "percentage": 0.2
+    },
+    {
+      "aircraft": "B350",
+      "count": 18,
+      "percentage": 0.19
+    },
+    {
+      "aircraft": "PC12",
+      "count": 16,
+      "percentage": 0.17
+    },
+    {
+      "aircraft": "A35K",
+      "count": 16,
+      "percentage": 0.17
+    },
+    {
+      "aircraft": "C510",
+      "count": 15,
+      "percentage": 0.16
+    },
+    {
+      "aircraft": "BCS3",
+      "count": 14,
+      "percentage": 0.15
+    },
+    {
+      "aircraft": "LJ35",
+      "count": 13,
+      "percentage": 0.14
+    },
+    {
+      "aircraft": "SF50",
+      "count": 13,
+      "percentage": 0.14
+    },
+    {
+      "aircraft": "B788",
+      "count": 12,
+      "percentage": 0.13
+    },
+    {
+      "aircraft": "DA62",
+      "count": 11,
+      "percentage": 0.12
+    },
+    {
+      "aircraft": "C414",
+      "count": 11,
+      "percentage": 0.12
+    },
+    {
+      "aircraft": "HDJT",
+      "count": 10,
+      "percentage": 0.11
+    },
+    {
+      "aircraft": "A332",
+      "count": 9,
+      "percentage": 0.1
+    },
+    {
+      "aircraft": "B742",
+      "count": 9,
+      "percentage": 0.1
+    },
+    {
+      "aircraft": "C172",
+      "count": 9,
+      "percentage": 0.1
+    },
+    {
+      "aircraft": "B722",
+      "count": 8,
+      "percentage": 0.09
+    },
+    {
+      "aircraft": "E195",
+      "count": 7,
+      "percentage": 0.07
+    },
+    {
+      "aircraft": "CONC",
+      "count": 7,
+      "percentage": 0.07
+    },
+    {
+      "aircraft": "DA40",
+      "count": 6,
+      "percentage": 0.06
+    },
+    {
+      "aircraft": "B462",
+      "count": 6,
+      "percentage": 0.06
+    },
+    {
+      "aircraft": "C208",
+      "count": 6,
+      "percentage": 0.06
+    },
+    {
+      "aircraft": "RJ85",
+      "count": 6,
+      "percentage": 0.06
+    },
+    {
+      "aircraft": "TBM8",
+      "count": 6,
+      "percentage": 0.06
+    },
+    {
+      "aircraft": "DC3",
+      "count": 6,
+      "percentage": 0.06
+    },
+    {
+      "aircraft": "SF34",
+      "count": 5,
+      "percentage": 0.05
+    },
+    {
+      "aircraft": "DA42",
+      "count": 5,
+      "percentage": 0.05
+    },
+    {
+      "aircraft": "A32N",
+      "count": 5,
+      "percentage": 0.05
+    },
+    {
+      "aircraft": "B733",
+      "count": 5,
+      "percentage": 0.05
+    },
+    {
+      "aircraft": "A318",
+      "count": 5,
+      "percentage": 0.05
+    },
+    {
+      "aircraft": "C25B",
+      "count": 5,
+      "percentage": 0.05
+    },
+    {
+      "aircraft": "MD88",
+      "count": 4,
+      "percentage": 0.04
+    },
+    {
+      "aircraft": "BE58",
+      "count": 4,
+      "percentage": 0.04
+    },
+    {
+      "aircraft": "AT45",
+      "count": 4,
+      "percentage": 0.04
+    },
+    {
+      "aircraft": "CRJX",
+      "count": 4,
+      "percentage": 0.04
+    },
+    {
+      "aircraft": "B773",
+      "count": 4,
+      "percentage": 0.04
+    },
+    {
+      "aircraft": "T",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "DC6",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "KODI",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "YK40",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "B764",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "E170",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "F28",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "E75L",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "BE36",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "EC35",
+      "count": 3,
+      "percentage": 0.03
+    },
+    {
+      "aircraft": "PA27",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "B732",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "AT72",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "CL30",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "BE60",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "E110",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "B777",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "BE9L",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "B463",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "E300",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "LJ45",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "P28A",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "A400",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "E50P",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "AT46",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "C525",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "B60T",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "L101",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "B753",
+      "count": 2,
+      "percentage": 0.02
+    },
+    {
+      "aircraft": "339",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "EA50",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "F900",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "E135",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "PA34",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B734",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "T134",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C68A",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "BE35",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A3ST",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "FA50",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "R721",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B712",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "TBM",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "SR22",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "PA30",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B735",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C25A",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A23",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C500",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A19N",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "PA44",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C560",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "CONI",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "EUFI",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "GLF5",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B762",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C82R",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "T154",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "P46T",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A225",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C310",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "TOR",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "PC21",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C152",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "AT43",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "SW4",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B73F",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A330",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "PA28",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C130",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C195",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "E75S",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A380",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "E290",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "GLEX",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "SU95",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "EC45",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "RV8",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A337",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B48F",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "F50",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "BCS1",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "E145",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "RJ70",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "AN24",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "PC24",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C408",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "SU27",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A139",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "STAR",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "A350",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "D228",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "AS32",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "P28B",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "P180",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "C17",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "PA24",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B77F",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "F35",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "H500",
+      "count": 1,
+      "percentage": 0.01
+    },
+    {
+      "aircraft": "B58",
+      "count": 1,
+      "percentage": 0.01
+    }
+  ],
+  "topAirlines": [
+    {
+      "airline": "FIN",
+      "count": 3810,
+      "percentage": 40.67
+    },
+    {
+      "airline": "SAS",
+      "count": 913,
+      "percentage": 9.75
+    },
+    {
+      "airline": "DLH",
+      "count": 653,
+      "percentage": 6.97
+    },
+    {
+      "airline": "NSZ",
+      "count": 304,
+      "percentage": 3.25
+    },
+    {
+      "airline": "RYR",
+      "count": 267,
+      "percentage": 2.85
+    },
+    {
+      "airline": "EWG",
+      "count": 167,
+      "percentage": 1.78
+    },
+    {
+      "airline": "KLM",
+      "count": 163,
+      "percentage": 1.74
+    },
+    {
+      "airline": "NOZ",
+      "count": 135,
+      "percentage": 1.44
+    },
+    {
+      "airline": "BAW",
+      "count": 117,
+      "percentage": 1.25
+    },
+    {
+      "airline": "EZY",
+      "count": 102,
+      "percentage": 1.09
+    }
+  ]
+}
